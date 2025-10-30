@@ -527,8 +527,9 @@ MonoBehaviour:
   nodePrefab: {fileID: 4367794131537825631, guid: 28614f7de2ed10f41ab21b724aeec77e, type: 3}
   uiNodes: []
   uiNodeRoot: {fileID: 1269678384}
+  algorithm: 5
   startIndex: 0
-  endIndex: 0
+  endIndex: 2
 --- !u!4 &919986700
 Transform:
   m_ObjectHideFlags: 0

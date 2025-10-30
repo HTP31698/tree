@@ -1,5 +1,8 @@
 using System.Collections.Generic;
+using UnityEditor.Animations;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class GraphSearch
 {
@@ -112,6 +115,147 @@ public class GraphSearch
         }
 
         GraphNode step = endNode;
+        while (step != null)
+        {
+            path.Add(step);
+            step = step.previous;
+        }
+
+        path.Reverse();
+        return true;
+    }
+
+    public bool Dikjstra(GraphNode start, GraphNode goal)
+    {
+        path.Clear();
+        graph.ResetNodePrevious();
+
+        var visited = new HashSet<GraphNode>();
+        var pQueue = new PriorityQueue<GraphNode, int>();
+        var distances = new int[graph.nodes.Length];
+        for (int i = 0; i < distances.Length; ++i)
+        {
+            distances[i] = int.MaxValue;
+        }
+
+        distances[start.id] = start.weight;
+        pQueue.Enqueue(start, distances[start.id]);
+        bool success = false;
+
+        while (pQueue.Count > 0)
+        {
+            var currentNode = pQueue.Dequeue();
+            if (visited.Contains(currentNode))
+                continue;
+
+            if (currentNode == goal)
+            {
+                success = true;
+                break;
+            }
+
+            visited.Add(currentNode);
+
+            foreach (var adjacent in currentNode.adjacents)
+            {
+                if (!adjacent.CanVisit || visited.Contains(adjacent))
+                    continue;
+
+                var newDistance = distances[currentNode.id] + adjacent.weight;
+                if (distances[adjacent.id] > newDistance)
+                {
+                    distances[adjacent.id] = newDistance;
+                    adjacent.previous = currentNode;
+                    pQueue.Enqueue(adjacent, newDistance);
+                }
+            }
+        }
+
+        if (!success)
+        {
+            return false;
+        }
+
+        GraphNode step = goal;
+        while (step != null)
+        {
+            path.Add(step);
+            step = step.previous;
+        }
+
+        path.Reverse();
+        return true;
+    }
+
+    protected int Heuristic(GraphNode a, GraphNode b)
+    {
+        int ax = a.id % graph.cols;
+        int ay = a.id / graph.cols;
+
+        int bx = b.id % graph.cols;
+        int by = b.id / graph.cols;
+
+        return Mathf.Abs(ax - bx) + Mathf.Abs(ay - by);
+    }
+
+    public bool AStar(GraphNode start, GraphNode goal)
+    {
+        path.Clear();
+        graph.ResetNodePrevious();
+
+        var visited = new HashSet<GraphNode>();
+        var pQueue = new PriorityQueue<GraphNode, int>();
+        var distances = new int[graph.nodes.Length];
+        var scores = new int[graph.nodes.Length];
+        for (int i = 0; i < distances.Length; ++i)
+        {
+            scores[i] = distances[i] = int.MaxValue;
+        }
+
+        distances[start.id] = start.weight;
+        scores[start.id] = distances[start.id] + Heuristic(start, goal);
+        pQueue.Enqueue(start, scores[start.id]);
+
+        bool success = false;
+        while (pQueue.Count > 0)
+        {
+            var currentNode = pQueue.Dequeue();
+            if (visited.Contains(currentNode))
+                continue;
+            if (currentNode == goal)
+            {
+                success = true;
+                break;
+            }
+
+            visited.Add(currentNode);
+            foreach (var adjacent in currentNode.adjacents)
+            {
+                if (!adjacent.CanVisit || visited.Contains(adjacent))
+                {
+                    continue;
+                }
+
+                var newDistance = distances[currentNode.id] + adjacent.weight;
+                if (distances[adjacent.id] > newDistance)
+                {
+                    distances[adjacent.id] = newDistance;
+                    scores[adjacent.id] = distances[adjacent.id] + Heuristic(adjacent, goal);
+                    adjacent.previous = currentNode;
+
+                    pQueue.Enqueue(adjacent, scores[adjacent.id]);
+                }
+            }
+
+        }
+
+
+        if (!success)
+        {
+            return false;
+        }
+
+        GraphNode step = goal;
         while (step != null)
         {
             path.Add(step);

@@ -1,11 +1,12 @@
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
-public class PriorityQueue<TElement, TPriority> where TPriority : IComparable<TPriority>
+public class TileQueue<TElement, TPriority> where TPriority : IComparable<TPriority>
 {
     private List<(TElement Element, TPriority Priority)> heap;
 
-    public PriorityQueue()
+    public TileQueue()
     {
         heap = new List<(TElement, TPriority)>();
     }
@@ -27,7 +28,7 @@ public class PriorityQueue<TElement, TPriority> where TPriority : IComparable<TP
         heap[0] = heap[heap.Count - 1];
         heap.RemoveAt(heap.Count - 1);
 
-        if(heap.Count > 0)
+        if (heap.Count > 0)
         {
             HeapifyDown(0);
         }
@@ -51,7 +52,7 @@ public class PriorityQueue<TElement, TPriority> where TPriority : IComparable<TP
     private void HeapifyUp(int index)
     {
         int parentIndex;
-        while(index > 0)
+        while (index > 0)
         {
             parentIndex = (index - 1) / 2;
             if (heap[index].Priority.CompareTo(heap[parentIndex].Priority) < 0)
