@@ -6,8 +6,8 @@ using UnityEngine.UI;
 
 public class HashTableTest : MonoBehaviour
 {
-    private OpenAddressingHashTable<string, int> openAddressingHashTable;
-    private ChainingHashTable<string, int> chainingHashTable;
+    private OpenAddressingHashTable<string, int> open;
+    private ChainingHashTable<string, int> chain;
 
     [Header("Dropdown")]
     public TMP_Dropdown First;
@@ -29,24 +29,8 @@ public class HashTableTest : MonoBehaviour
 
     private void Start()
     {
-       
+       open = new OpenAddressingHashTable<string, int>();
     }
 
-    private void openAddressingHashTableOn()
-    {
-        if (chainingHashTable != null)
-        {
-            chainingHashTable = null;
-        }
-        openAddressingHashTable = new OpenAddressingHashTable<string, int>();
-    }
-    private void chainingHashTableOn()
-    {
-        if (openAddressingHashTable != null)
-        {
-            openAddressingHashTable = null;
-        }
-        chainingHashTable = new ChainingHashTable<string, int>();
-    }
 
 }
